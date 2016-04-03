@@ -2,7 +2,6 @@ package org.feather.search;
 
 import java.io.IOException;
 
-import org.feather.search.index.LuceneIndex;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

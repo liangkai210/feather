@@ -1,4 +1,4 @@
-package org.feather.search;
+package org.feather.implement.craigslist;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -15,17 +15,22 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.feather.crawler.Auto;
 import org.feather.crawler.CraiglistCrawler;
-import org.feather.crawler.DetailedInfo;
 import org.junit.Before;
 import org.junit.Test;
 
 public class TestIndex {
 
-	String indexPath = "/Users/liangkai/workspace/index";
+	String indexPath = "/Users/dongdong/Workspaces/index";
 
 	Directory directory = null;
 	IndexWriter writer = null;
@@ -60,21 +65,25 @@ public class TestIndex {
 	private int flushIndex = 0;
 
 	@Test
-	public void createIndex() throws IOException {
+	public void createIndex() throws IOException, InterruptedException {
 		CraiglistCrawler craiglistCrawler = new CraiglistCrawler();
 		Thread thread = new Thread(craiglistCrawler);
 		thread.start();
-
 		while (craiglistCrawler.isFinish == false) {
-			if (craiglistCrawler.infos.isEmpty()) {
+			if (craiglistCrawler.autos.isEmpty()) {
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			writer.addDocument(createDocument(craiglistCrawler.infos.poll()));
+			writer.addDocument(createDocument(craiglistCrawler.autos.poll()));
 			bulkWrite();
+			System.out.print("--- " + craiglistCrawler.count + " ---");
+			if (craiglistCrawler.count >= 10) {
+				thread.join();
+				craiglistCrawler.isFinish = true;
+			}
 		}
 	}
 
@@ -84,21 +93,47 @@ public class TestIndex {
 			writer.commit();
 			flushIndex = 0;
 		}
-
 	}
 
-	public Document createDocument(DetailedInfo info) {
+	private Document createDocument(Auto info) {
 		flushIndex++;
 		Document document = new Document();
 		document.add(new TextField("title", info.getTitle(), Store.YES));
 		document.add(new TextField("description", info.getDescription(), Store.YES));
-		document.add(new TextField("carName", info.getCarName(), Store.YES));
+		document.add(new TextField("carName", info.getAutoName(), Store.YES));
 		document.add(new LongField("postedTime", info.getPostedTime(), Store.YES));
 		document.add(new LongField("updatedTime", info.getUpdatedTime(), Store.YES));
 		document.add(new DoubleField("price", info.getPrice(), Store.YES));
-		for (Map.Entry<String, String> entry : info.getCarInfo().entrySet())
+		for (Map.Entry<String, String> entry : info.getAutoInfo().entrySet())
 			document.add(new TextField(entry.getKey(), entry.getValue(), Store.YES));
 		return document;
 	}
 
+	@Test
+	public void testSearcher() throws ParseException, IOException {
+		String queryString = "Sedan";
+		QueryParser parser = new QueryParser("title", new StandardAnalyzer());
+		Query query = parser.parse(queryString);
+		TopDocs topDocs = searcher.search(query, 15);
+		displayDocs(topDocs);
+	}
+
+	@Test
+	public void testSearcherSort() throws ParseException, IOException {
+		String queryString = "Sedan";
+		QueryParser parser = new QueryParser("title", new StandardAnalyzer());
+		Query query = parser.parse(queryString);
+		TopDocs topDocs = searcher.search(query, 15);
+		displayDocs(topDocs);
+	}
+
+	private void displayDocs(TopDocs topDocs) throws IOException {
+		for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+			Document document = searcher.doc(scoreDoc.doc);
+			System.out.println(document.get("title"));
+		}
+	}
+
+	public void testFilter() {
+	}
 }

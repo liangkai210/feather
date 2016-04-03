@@ -1,25 +1,24 @@
 package org.feather.app;
 
 import org.feather.app.module.ModuleFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Start {
+public abstract class Start {
 
-	public static void registerModules() {
+	Logger logger = LoggerFactory.getLogger(Start.class);
+
+	public abstract void registerModules();
+
+	public abstract void addToStartModules();
+
+	public void start() {
 		ModuleFactory.registerModule(Server.class);
-	}
-
-	public static void addToStartModules() {
 		ModuleFactory.addToStartModule(Server.class.getName());
-	}
-
-	public static void startModules() {
-		ModuleFactory.startModules();
-	}
-
-	public static void main(String[] args) {
 		registerModules();
 		addToStartModules();
-		startModules();
+		ModuleFactory.startModules();
+		logger.info("App is running now.");
 	}
 
 }

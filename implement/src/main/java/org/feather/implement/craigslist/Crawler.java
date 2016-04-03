@@ -1,4 +1,4 @@
-package org.feather.crawler;
+package org.feather.implement.craigslist;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -6,11 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
+import org.feather.crawler.Auto;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,13 +17,14 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CraiglistCrawler implements Runnable {
+public class Crawler {
 
 	public boolean isFinish = false;
 	public int count = 0;
-	public Queue<Auto> autos = new LinkedList<Auto>();
 
-	static Logger logger = LoggerFactory.getLogger(CraiglistCrawler.class);
+	CarIndex carIndex = new CarIndex();
+
+	static Logger logger = LoggerFactory.getLogger(Crawler.class);
 
 	public static String url = "https://montgomery.craigslist.org/";
 
@@ -145,7 +145,7 @@ public class CraiglistCrawler implements Runnable {
 	}
 
 	public void run(String url) {
-		CraiglistCrawler cc = new CraiglistCrawler();
+		Crawler cc = new Crawler();
 		List<String> cityUrls = cc.getNearCitys(url);
 		for (String cityUrl : cityUrls) {
 			String cars = getAutoList(cityUrl);
@@ -160,8 +160,8 @@ public class CraiglistCrawler implements Runnable {
 					if (info == null)
 						continue;
 					count++;
-					autos.add(info);
-					System.out.println(info);
+					carIndex.addDocument(info);
+					System.out.println(count + ": " + info);
 				}
 			}
 

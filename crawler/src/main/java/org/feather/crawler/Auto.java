@@ -2,22 +2,21 @@ package org.feather.crawler;
 
 import java.util.Map;
 
-public class DetailedInfo {
+import org.feather.common.util.JsonUtil;
+
+public class Auto {
 
 	private String title;
 	private String description;
-	private String carName;
+	private String autoName;
 	private long postedTime;
 	private long updatedTime;
 	private double price;
-	private Map<String, String> carInfo;
+	private Map<String, String> autoInfo;
 
 	@Override
 	public String toString() {
-		StringBuffer result = new StringBuffer();
-		result.append("title: ").append(title).append("---");
-		result.append("price: ").append(price);
-		return result.toString();
+		return JsonUtil.toString(this);
 	}
 
 	public String getTitle() {
@@ -36,12 +35,12 @@ public class DetailedInfo {
 		this.description = description;
 	}
 
-	public String getCarName() {
-		return carName;
+	public String getAutoName() {
+		return autoName;
 	}
 
-	public void setCarName(String carName) {
-		this.carName = carName;
+	public void setAutoName(String autoName) {
+		this.autoName = autoName;
 	}
 
 	public long getPostedTime() {
@@ -60,20 +59,20 @@ public class DetailedInfo {
 		this.updatedTime = updatedTime;
 	}
 
-	public Map<String, String> getCarInfo() {
-		return carInfo;
-	}
-
-	public void setCarInfo(Map<String, String> carInfo) {
-		this.carInfo = carInfo;
-	}
-
 	public double getPrice() {
 		return price;
 	}
 
 	public void setPrice(double price) {
 		this.price = price;
+	}
+
+	public Map<String, String> getAutoInfo() {
+		return autoInfo;
+	}
+
+	public void setAutoInfo(Map<String, String> autoInfo) {
+		this.autoInfo = autoInfo;
 	}
 
 }

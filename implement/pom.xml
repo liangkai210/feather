@@ -9,8 +9,8 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.feather.crawler</artifactId>
-	<name>crawler</name>
+	<artifactId>org.feather.implement</artifactId>
+	<name>implement</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -26,13 +26,27 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
+			<groupId>org.feather</groupId>
+			<artifactId>org.feather.search</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.feather</groupId>
+			<artifactId>org.feather.crawler</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.feather</groupId>
+			<artifactId>org.feather.app</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
